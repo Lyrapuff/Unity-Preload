@@ -1,0 +1,15 @@
+{
+  "name": "com.smalltail.preload",
+  "version": "1.0.0",
+  "displayName": "Preload",
+  "description": "Makes preloading singletons as easy as marking a class with an attribute",
+  "unity": "2019.1",
+  "unityRelease": "0b5",
+  "dependencies": {},
+  "keywords": [],
+  "author": {
+    "name": "Lyrapuff",
+    "email": "lyrapuff@gmail.com",
+    "url": "https://github.com/Lyrapuff"
+  }
+}
