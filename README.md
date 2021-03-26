@@ -13,6 +13,6 @@ public class MapGrid : MonoBehaviour
 ...
 ```
 
-And that's it, an empty object with this MonoBehaviour on it will be instantiated and DontDestroyOnLoaded as soon as the scene starts.
+And that's it, an empty object with this MonoBehaviour attached to it will be instantiated and DontDestroyOnLoaded as soon as the game starts.
 
 Though be aware that this thing is not well tested yet, and perhaps will be extended in future to support multiple use cases.
