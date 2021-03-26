@@ -8,8 +8,8 @@ Via Unity Package Manager add from git url
 
 # Usage
 ```csharp
-[Preloaded("MapGrid")]
-public class MapGrid : MonoBehaviour
+[Preloaded("Optional name")]
+public class ASingletonObject : MonoBehaviour
 ...
 ```
 
