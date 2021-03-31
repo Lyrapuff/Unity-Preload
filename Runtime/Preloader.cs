@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using SmallTail.Preload.Attributes;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
@@ -11,12 +12,23 @@ namespace SmallTail.Preload
 {
     public static class Preloader
     {
+        private static List<Component> _components = new List<Component>();
+        
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        public static void OnLoad()
+        private static void OnLoad()
         {
             Stopwatch sw = Stopwatch.StartNew();
-            int count = 0;
+
+            _components = Preload();
             
+            sw.Stop();
+            Debug.Log($"[ST Preloader] Preloaded {_components.Count} {(_components.Count == 1 ? "script" : "scripts")} in {sw.Elapsed.TotalSeconds}s.");
+        }
+
+        private static List<Component> Preload()
+        {
+            List<Component> components = new List<Component>();
+
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             foreach (Assembly assembly in assemblies)
@@ -29,20 +41,24 @@ namespace SmallTail.Preload
                     if (preload.BaseType == typeof(MonoBehaviour))
                     {
                         GameObject instance = new GameObject();
-
-                        string name = (preload.GetCustomAttribute(typeof(PreloadedAttribute)) as PreloadedAttribute)?.Name ?? preload.Name;
-                        instance.name = name;
-                        
-                        instance.AddComponent(preload);
                         Object.DontDestroyOnLoad(instance);
 
-                        count++;
+                        PreloadedAttribute attribute = preload.GetCustomAttribute(typeof(PreloadedAttribute)) as PreloadedAttribute;
+                        string name = attribute?.Name ?? preload.Name;
+                        instance.name = name;
+                        
+                        Component component = instance.AddComponent(preload);
+                        components.Add(component);
                     }
                 }
             }
             
-            sw.Stop();
-            Debug.Log($"[ST Preloader] Preloaded {count} {(count == 1 ? "script" : "scripts")} in {sw.Elapsed.TotalSeconds}s.");
+            return components;
+        }
+
+        public static T Get<T>() where T : Component
+        {
+            return _components.FirstOrDefault(comp => comp.GetType() == typeof(T)) as T;
         }
     }
 }

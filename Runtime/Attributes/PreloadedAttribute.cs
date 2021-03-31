@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SmallTail.Preload
+namespace SmallTail.Preload.Attributes
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class PreloadedAttribute : Attribute
