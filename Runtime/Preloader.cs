@@ -19,16 +19,15 @@ namespace SmallTail.Preload
         {
             Stopwatch sw = Stopwatch.StartNew();
 
-            _components = Preload();
+            PreloadReflected();
+            PreloadFromSettings();
             
             sw.Stop();
             Debug.Log($"[ST Preloader] Preloaded {_components.Count} {(_components.Count == 1 ? "script" : "scripts")} in {sw.Elapsed.TotalSeconds}s.");
         }
 
-        private static List<Component> Preload()
+        private static void PreloadReflected()
         {
-            List<Component> components = new List<Component>();
-
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             foreach (Assembly assembly in assemblies)
@@ -48,12 +47,24 @@ namespace SmallTail.Preload
                         instance.name = name;
                         
                         Component component = instance.AddComponent(preload);
-                        components.Add(component);
+                        _components.Add(component);
                     }
                 }
             }
-            
-            return components;
+        }
+
+        private static void PreloadFromSettings()
+        {
+            PreloaderSettings settings = Resources.Load<PreloaderSettings>("Settings/PreloaderSettings");
+
+            if (settings != null)
+            {
+                foreach (GameObject gameObject in settings.Preloaded)
+                {
+                    GameObject instance = Object.Instantiate(gameObject);
+                    Object.DontDestroyOnLoad(instance);
+                }
+            }
         }
 
         public static T Get<T>() where T : Component
